@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-7&vmnw+r3-63ql8r9si9szpnc-90dx92y853*w)n@8nw3$d&_z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["hotgiostblogbackend.onrender.com", "localhost", ""]
 
 
 # Application definition
