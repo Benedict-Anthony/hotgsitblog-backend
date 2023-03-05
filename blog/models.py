@@ -41,8 +41,8 @@ class Post(models.Model):
        
     def image_url(self):
         try:
-        #    return f'https://hotgiostblogbackend.onrender.com{self.image.url}'
-           return f'http://127.0.0.1:8000{self.image.url}'
+           return f'https://hotgiostblogbackend.onrender.com{self.image.url}'
+        #    return f'http://127.0.0.1:8000{self.image.url}'
         except:
             return ""
     def thumbnail_url(self):
