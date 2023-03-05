@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -35,8 +36,15 @@ class PostMutateView(APIView):
   
     def get(self, request, slug=None, related=None, **kwargs):
         user = request.user
-    
-        queryset = Post.objects.all()
+        id = kwargs.get("id")
+        if id:
+            try:
+                queryset = Post.objects.get(id=id)
+                serializer = PostDetailSerializer(queryset).data
+                return Response(serializer, status=status.HTTP_200_OK)
+            except Post.DoesNotExist:
+                return Response({"message":"item not find in table"}, status=status.HTTP_404_NOT_FOUND)
+        queryset = Post.objects.all().order_by("-created_at")
         serializer = PostListSerializer(queryset, many=True).data
         
         if request.user.is_publisher:
@@ -60,7 +68,7 @@ class PostMutateView(APIView):
         id = kwargs.get("id")
         if id:
             try:
-                qs = Post.published.get(pk=id)
+                qs = Post.objects.get(pk=id)
                 serializer = PostCreateSerializer(data=request.data ,instance=qs)
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
@@ -78,24 +86,19 @@ class PostMutateView(APIView):
             return Response({"mesage":"You are not authorize to publish a post"}) 
         if qs.is_published:
             return Response({"msg":"Post has already be published"})
-        serializer = PostCreateSerializer(data=request.data, instance=qs, partial=True)
-        serializer.is_valid(raise_exception=True)
         
-        serializer.save(is_published=True, is_publisher=request.user.id)
-        return Response(serializer.data,status=status.HTTP_201_CREATED)
+        qs.is_published = True
+        qs.publisher = request.user
+        qs.save()
+        return Response({"msg":"published"},status=status.HTTP_206_PARTIAL_CONTENT)
     
-    def delete(self, request, **kwargs):
-        id = kwargs.get("id")
-        if id:
-            try:
-                qs = Post.objects.get(pk=id)
-                qs.delete()
-                return Response({"msg": "Item was deleted"})
+    def delete(self, request, id, **kwargs):
+        qs = Post.objects.get(pk=id)
+        qs.delete()
+        return Response({"msg": "Item was deleted"}, status=status.HTTP_202_ACCEPTED)
                 
-            except Post.DoesNotExist:
-                return Response({"msg": "no such data in table"})
+            
         
-        return Response({"err": "something we wrong....."})
     
     
     

@@ -7,9 +7,9 @@ urlpatterns = [
     path("", PostView.as_view(), name="posts"),
     path("detail/<slug:slug>/", PostView.as_view(), name="post-detail"),
     
-    # create, update, delete view
+    # create, update, delete and patch view
     
-    path("create/", PostMutateView.as_view(), name="create-post"),
-    path("admin/", PostMutateView.as_view(), name="mutate"),
-    path("mutate/<int:id>/", PostMutateView.as_view(), name="mutate")
+    path("admin/", PostMutateView.as_view(), name="admin"),
+    path("admin/mutate/", PostMutateView.as_view(), name="mutate"),
+    path("admin/mutate/<int:id>/", PostMutateView.as_view(), name="mutate")
 ]
